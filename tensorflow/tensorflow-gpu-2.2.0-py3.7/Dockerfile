@@ -1,10 +1,10 @@
 ARG UBUNTU_VERSION=16.04
 
-ARG CUDA=10.0
+ARG CUDA=10.1
 FROM nvidia/cuda:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
-ARG CUDA=10.0
+ARG CUDA=10.1
 ARG CUDADASH=10-0
-ARG CUDNN=7.4.1.5-1
+ARG CUDNN=8.0.2.39-1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-cusolver-${CUDADASH} \
         cuda-cusparse-${CUDADASH} \
         curl \
-        libcudnn7=${CUDNN}+cuda${CUDA} \
+        libcudnn8=${CUDNN}+cuda${CUDA} \
         libfreetype6-dev \
         libhdf5-serial-dev \
         libzmq3-dev \
@@ -25,23 +25,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         wget
 
 RUN apt-get update && \
-        apt-get install nvinfer-runtime-trt-repo-ubuntu1604-5.0.2-ga-cuda${CUDA} \
+        apt-get install nvinfer-runtime-trt-repo-ubuntu1604-5.0.2-ga-cuda10.0 \
         && apt-get update \
-        && apt-get install -y --no-install-recommends libnvinfer5=5.0.2-1+cuda${CUDA} \
+        && apt-get install -y --no-install-recommends libnvinfer5=5.0.2-1+cuda10.0 \
         && apt-get install -y libsm6 libxext6 libxrender-dev \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
 ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
-ARG PYTHON=python3.7
+ARG PYTHON=python3.9
 
 ENV LANG C.UTF-8
 
-RUN add-apt-repository ppa:deadsnakes/ppa && apt-get update && apt-get install -y ${PYTHON}
+RUN add-apt-repository ppa:deadsnakes/ppa && apt-get update && apt-get install -y ${PYTHON} python3-pip
 
-RUN wget https://bootstrap.pypa.io/get-pip.py
-RUN ${PYTHON} get-pip.py
+#RUN wget https://bootstrap.pypa.io/get-pip.py
+#RUN ${PYTHON} get-pip.py
 RUN ln -sf /usr/bin/${PYTHON} /usr/local/bin/python3
 RUN ln -sf /usr/local/bin/pip /usr/local/bin/pip3
 
